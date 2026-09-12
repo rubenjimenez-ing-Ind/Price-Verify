@@ -1,0 +1,31 @@
+{
+  "_meta": {
+    "version": 1,
+    "lastModified": "2026-09-12T00:00:00.000Z",
+    "description": "Colección principal de productos para PriceVerify"
+  },
+  "records": [
+    {
+      "id": "prod_001",
+      "createdAt": "2026-09-12T00:00:00.000Z",
+      "updatedAt": "2026-09-12T00:00:00.000Z",
+      "name": "Arroz Premium 1kg",
+      "brand": "PriceVerify Selección",
+      "category": "alimentos",
+      "price": 24.5,
+      "stock": 42,
+      "active": true
+    },
+    {
+      "id": "prod_002",
+      "createdAt": "2026-09-12T00:00:00.000Z",
+      "updatedAt": "2026-09-12T00:00:00.000Z",
+      "name": "Leche Entera 1L",
+      "brand": "Quesos del Valle",
+      "category": "lácteos",
+      "price": 18.9,
+      "stock": 15,
+      "active": true
+    }
+  ]
+}
