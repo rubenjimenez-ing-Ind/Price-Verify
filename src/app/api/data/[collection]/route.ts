@@ -20,7 +20,7 @@ export async function GET(
 
     const records = await getAll(params.collection);
     return NextResponse.json({ success: true, data: records, timestamp: new Date().toISOString() }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, error: 'Internal server error', code: 'INTERNAL_ERROR' }, { status: 500 });
   }
 }
@@ -37,7 +37,7 @@ export async function POST(
       { success: true, data: created, timestamp: new Date().toISOString() },
       { status: 201 },
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, error: 'Unable to create item', code: 'CREATE_ERROR' }, { status: 400 });
   }
 }
@@ -52,7 +52,7 @@ export async function PUT(
     const updated = await update(params.collection, id, partial);
 
     return NextResponse.json({ success: true, data: updated, timestamp: new Date().toISOString() }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, error: 'Unable to update item', code: 'UPDATE_ERROR' }, { status: 400 });
   }
 }
@@ -71,7 +71,7 @@ export async function DELETE(
   try {
     await remove(params.collection, id);
     return NextResponse.json({ success: true, data: { deleted: true }, timestamp: new Date().toISOString() }, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, error: 'Unable to delete item', code: 'DELETE_ERROR' }, { status: 404 });
   }
 }
