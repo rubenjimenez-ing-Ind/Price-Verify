@@ -31,6 +31,7 @@ export default function LoginPage() {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     if (normalizedEmail.toLowerCase() === 'demo@priceverify.com' && password === 'demo1234') {
+      document.cookie = 'priceverify_session=authenticated; path=/; SameSite=Lax';
       router.push('/');
       return;
     }
