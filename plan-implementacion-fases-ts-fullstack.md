@@ -1,5 +1,11 @@
 # Plan de Implementación por Fases — Sistema Fullstack TypeScript
 
+> **Aviso:** este plan inicial propone funcionalidades e infraestructura que
+> todavía no están justificadas para el producto. Para el alcance vigente,
+> las decisiones técnicas y los criterios del MVP, consulta
+> [alcance-y-decisiones.md](./alcance-y-decisiones.md). Este documento queda
+> como borrador histórico y no debe tomarse como compromiso de implementación.
+>
 > **Documento complementario a:** Plan de Infraestructura Fullstack TS  
 > **Arquitecto:** Claude (Asistente IA)  
 > **Solicitante:** Jhonatan Castro — CTSO  

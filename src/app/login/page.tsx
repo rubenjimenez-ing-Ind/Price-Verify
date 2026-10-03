@@ -27,17 +27,27 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
 
-    // TODO: conectar con la API real
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail, password }),
+      });
+      const result = (await response.json()) as { error?: string };
 
-    if (normalizedEmail.toLowerCase() === 'demo@priceverify.com' && password === 'demo1234') {
-      document.cookie = 'priceverify_session=authenticated; path=/; SameSite=Lax';
+      if (!response.ok) {
+        setPasswordError(result.error ?? 'Correo o contraseña incorrectos');
+        setIsSubmitting(false);
+        return;
+      }
+
       router.push('/');
+      router.refresh();
       return;
+    } catch {
+      setPasswordError('No se pudo conectar. Inténtalo de nuevo.');
+      setIsSubmitting(false);
     }
-
-    setPasswordError('Correo o contraseña incorrectos');
-    setIsSubmitting(false);
   }
 
   return (

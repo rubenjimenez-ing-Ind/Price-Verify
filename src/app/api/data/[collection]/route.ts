@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { create, getAll, getById, remove, update } from '@/lib/json-db';
 
+function rejectPrivateCollection(collection: string) {
+  if (collection === 'users') {
+    return NextResponse.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, { status: 404 });
+  }
+
+  return null;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { collection: string } },
 ) {
+  const privateCollectionResponse = rejectPrivateCollection(params.collection);
+  if (privateCollectionResponse) {
+    return privateCollectionResponse;
+  }
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 
@@ -29,6 +42,11 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { collection: string } },
 ) {
+  const privateCollectionResponse = rejectPrivateCollection(params.collection);
+  if (privateCollectionResponse) {
+    return privateCollectionResponse;
+  }
+
   try {
     const body = await request.json();
     const created = await create(params.collection, body);
@@ -46,6 +64,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { collection: string } },
 ) {
+  const privateCollectionResponse = rejectPrivateCollection(params.collection);
+  if (privateCollectionResponse) {
+    return privateCollectionResponse;
+  }
+
   try {
     const body = await request.json();
     const { id, ...partial } = body;
@@ -61,6 +84,11 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { collection: string } },
 ) {
+  const privateCollectionResponse = rejectPrivateCollection(params.collection);
+  if (privateCollectionResponse) {
+    return privateCollectionResponse;
+  }
+
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 
