@@ -14,8 +14,14 @@ export default function ProfilePage() {
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -79,11 +85,54 @@ export default function ProfilePage() {
     }
   }
 
+  async function handlePasswordSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('La nueva contraseña y su confirmación no coinciden.');
+      return;
+    }
+
+    if (newPassword === currentPassword) {
+      setPasswordError('La nueva contraseña debe ser distinta de la actual.');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const response = await fetch('/api/auth/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const result = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        throw new Error(result.error ?? 'No se pudo cambiar la contraseña.');
+      }
+
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordSuccess('Tu contraseña se cambió correctamente.');
+    } catch (changeError: unknown) {
+      setPasswordError(
+        changeError instanceof Error
+          ? changeError.message
+          : 'No se pudo cambiar la contraseña.',
+      );
+    } finally {
+      setIsChangingPassword(false);
+    }
+  }
+
   return (
     <>
       <AppNavigation />
       <main className="min-h-screen bg-slate-950 px-4 py-10 text-white sm:px-6">
-        <section className="mx-auto w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-black/20 sm:p-8">
+        <div className="mx-auto w-full max-w-2xl space-y-6">
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-black/20 sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">
             Cuenta
           </p>
@@ -149,6 +198,87 @@ export default function ProfilePage() {
             </form>
           ) : null}
         </section>
+
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl shadow-black/20 sm:p-8">
+          <h2 className="text-2xl font-bold">Cambiar contraseña</h2>
+          <p className="mt-2 text-sm text-slate-400">
+            Confirma tu contraseña actual para establecer una nueva.
+          </p>
+
+          <form className="mt-6 space-y-5" onSubmit={handlePasswordSubmit}>
+            <div>
+              <label htmlFor="current-password" className="mb-2 block text-sm font-medium text-slate-200">
+                Contraseña actual
+              </label>
+              <input
+                id="current-password"
+                name="currentPassword"
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                onChange={(event) => {
+                  setCurrentPassword(event.target.value);
+                  setPasswordError('');
+                  setPasswordSuccess('');
+                }}
+                required
+                className="block w-full min-w-0 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-base text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="new-password" className="mb-2 block text-sm font-medium text-slate-200">
+                Nueva contraseña
+              </label>
+              <input
+                id="new-password"
+                name="newPassword"
+                type="password"
+                autoComplete="new-password"
+                value={newPassword}
+                onChange={(event) => {
+                  setNewPassword(event.target.value);
+                  setPasswordError('');
+                  setPasswordSuccess('');
+                }}
+                required
+                className="block w-full min-w-0 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-base text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="confirm-password" className="mb-2 block text-sm font-medium text-slate-200">
+                Confirmar nueva contraseña
+              </label>
+              <input
+                id="confirm-password"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(event) => {
+                  setConfirmPassword(event.target.value);
+                  setPasswordError('');
+                  setPasswordSuccess('');
+                }}
+                required
+                className="block w-full min-w-0 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-base text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              />
+            </div>
+
+            {passwordError && <p className="text-sm text-rose-400" role="alert">{passwordError}</p>}
+            {passwordSuccess && <p className="text-sm text-emerald-400" role="status">{passwordSuccess}</p>}
+
+            <button
+              type="submit"
+              disabled={isChangingPassword}
+              className="w-full rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-48"
+            >
+              {isChangingPassword ? 'Cambiando...' : 'Cambiar contraseña'}
+            </button>
+          </form>
+        </section>
+        </div>
       </main>
     </>
   );
