@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { obtenerConfiguracionSupabase } from '@/lib/supabase-config';
 
 export const runtime = 'nodejs';
 
@@ -30,9 +31,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseKey) {
+  const supabase = obtenerConfiguracionSupabase();
+  if (!supabase) {
     console.error('Supabase password reset is not configured.');
     return NextResponse.json(
       { error: 'No se pudo restablecer la contraseña.' },
@@ -41,10 +41,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/user`, {
+    const response = await fetch(`${supabase.url}/auth/v1/user`, {
       method: 'PUT',
       headers: {
-        apikey: supabaseKey,
+        apikey: supabase.anonKey,
         Authorization: `Bearer ${validacion.data.accessToken}`,
         'Content-Type': 'application/json',
       },

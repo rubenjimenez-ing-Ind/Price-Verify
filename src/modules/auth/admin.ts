@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { readSession, SESSION_COOKIE_NAME } from '@/lib/auth-session';
+import { obtenerConfiguracionSupabase } from '@/lib/supabase-config';
 
 const SUPABASE_AUTH_USER_PATH = '/auth/v1/user';
 
@@ -12,17 +13,16 @@ export interface AdminSession {
 
 export async function getAdminSession(request: NextRequest): Promise<AdminSession | null> {
   const sessionSecret = process.env.AUTH_SESSION_SECRET;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabase = obtenerConfiguracionSupabase();
+  const serviceRoleKey = supabase?.serviceRoleKey;
 
   if (
     !sessionSecret ||
-    !supabaseUrl ||
-    !publishableKey ||
+    !supabase ||
+    !supabase.anonKey ||
     !serviceRoleKey ||
     serviceRoleKey.startsWith('sb_publishable_') ||
-    serviceRoleKey === publishableKey
+    serviceRoleKey === supabase.anonKey
   ) {
     throw new Error('Supabase admin configuration is incomplete.');
   }
@@ -35,9 +35,9 @@ export async function getAdminSession(request: NextRequest): Promise<AdminSessio
     return null;
   }
 
-  const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}${SUPABASE_AUTH_USER_PATH}`, {
+  const response = await fetch(`${supabase.url}${SUPABASE_AUTH_USER_PATH}`, {
     headers: {
-      apikey: publishableKey,
+      apikey: supabase.anonKey,
       Authorization: `Bearer ${session.accessToken}`,
     },
     cache: 'no-store',
@@ -66,5 +66,10 @@ export async function getAdminSession(request: NextRequest): Promise<AdminSessio
     return null;
   }
 
-  return { accessToken: session.accessToken, supabaseUrl, publishableKey, serviceRoleKey };
+  return {
+    accessToken: session.accessToken,
+    supabaseUrl: supabase.url,
+    publishableKey: supabase.anonKey,
+    serviceRoleKey,
+  };
 }

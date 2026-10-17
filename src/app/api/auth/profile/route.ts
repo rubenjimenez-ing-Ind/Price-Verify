@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readSession, SESSION_COOKIE_NAME } from '@/lib/auth-session';
+import { obtenerConfiguracionSupabase } from '@/lib/supabase-config';
 
 export const runtime = 'nodejs';
 
@@ -14,16 +15,15 @@ async function updateAuthMetadata(
   accessToken: string,
   metadata?: Record<string, unknown>,
 ): Promise<SupabaseUser | null> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseKey) {
+  const supabase = obtenerConfiguracionSupabase();
+  if (!supabase) {
     throw new Error('Supabase Auth is not configured.');
   }
 
-  const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/user`, {
+  const response = await fetch(`${supabase.url}/auth/v1/user`, {
     method: metadata ? 'PATCH' : 'GET',
     headers: {
-      apikey: supabaseKey,
+      apikey: supabase.anonKey,
       Authorization: `Bearer ${accessToken}`,
       ...(metadata ? { 'Content-Type': 'application/json' } : {}),
     },

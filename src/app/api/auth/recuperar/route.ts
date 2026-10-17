@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { obtenerConfiguracionSupabase } from '@/lib/supabase-config';
 import { obtenerUrlBase } from '@/lib/url-base';
 
 export const runtime = 'nodejs';
@@ -24,9 +25,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseKey) {
+  const supabase = obtenerConfiguracionSupabase();
+  if (!supabase) {
     console.error('Supabase password recovery is not configured.');
     return NextResponse.json(
       { error: 'No se pudo solicitar el restablecimiento. Inténtalo más tarde.' },
@@ -37,11 +37,11 @@ export async function POST(request: NextRequest) {
   try {
     const redirectTo = `${obtenerUrlBase()}/restablecer-contrasena`;
     const response = await fetch(
-      `${supabaseUrl.replace(/\/$/, '')}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`,
+      `${supabase.url}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`,
       {
         method: 'POST',
         headers: {
-          apikey: supabaseKey,
+          apikey: supabase.anonKey,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email: validacion.data.email }),

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSessionToken, readSession, SESSION_COOKIE_NAME } from '@/lib/auth-session';
+import { obtenerConfiguracionSupabase } from '@/lib/supabase-config';
 
 export const runtime = 'nodejs';
 
@@ -67,9 +68,8 @@ export async function POST(request: NextRequest) {
 
   try {
     const sessionSecret = process.env.AUTH_SESSION_SECRET;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!sessionSecret || !supabaseUrl || !supabaseKey) {
+    const supabase = obtenerConfiguracionSupabase();
+    if (!sessionSecret || !supabase) {
       console.error('Supabase Auth or AUTH_SESSION_SECRET is not configured.');
       return NextResponse.json({ error: 'El cambio de contraseña no está configurado.' }, { status: 500 });
     }
@@ -82,9 +82,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Sesión no válida.' }, { status: 401 });
     }
 
-    const authUrl = supabaseUrl.replace(/\/$/, '');
+    const authUrl = supabase.url;
     const headers = {
-      apikey: supabaseKey,
+      apikey: supabase.anonKey,
       Authorization: `Bearer ${session.accessToken}`,
     };
     const currentUserResponse = await fetch(`${authUrl}/auth/v1/user`, {
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       {
         method: 'POST',
         headers: {
-          apikey: supabaseKey,
+          apikey: supabase.anonKey,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
     const updateResponse = await fetch(`${authUrl}/auth/v1/user`, {
       method: 'PUT',
       headers: {
-        apikey: supabaseKey,
+        apikey: supabase.anonKey,
         Authorization: `Bearer ${authResult.access_token}`,
         'Content-Type': 'application/json',
       },

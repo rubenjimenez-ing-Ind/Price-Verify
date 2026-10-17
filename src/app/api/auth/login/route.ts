@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSessionToken, SESSION_COOKIE_NAME, SESSION_DURATION } from '@/lib/auth-session';
+import { obtenerConfiguracionSupabase } from '@/lib/supabase-config';
 
 export const runtime = 'nodejs';
 
@@ -26,21 +27,20 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabase = obtenerConfiguracionSupabase();
     const secret = process.env.AUTH_SESSION_SECRET;
 
-    if (!supabaseUrl || !supabaseKey || !secret || secret.length < 32) {
+    if (!supabase || !secret || secret.length < 32) {
       console.error('Supabase login or AUTH_SESSION_SECRET is not configured.');
       return NextResponse.json({ error: 'El acceso no está configurado.' }, { status: 500 });
     }
 
     const supabaseResponse = await fetch(
-      `${supabaseUrl.replace(/\/$/, '')}/auth/v1/token?grant_type=password`,
+      `${supabase.url}/auth/v1/token?grant_type=password`,
       {
         method: 'POST',
         headers: {
-          apikey: supabaseKey,
+          apikey: supabase.anonKey,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
