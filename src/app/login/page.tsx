@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
@@ -9,7 +9,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [mensaje, setMensaje] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (window.location.hash.includes('type=recovery')) {
+      window.location.replace(`/restablecer-contrasena${window.location.hash}`);
+      return;
+    }
+
+    if (new URLSearchParams(window.location.search).get('contrasenaRestablecida') === '1') {
+      setMensaje('Tu contraseña se restableció. Ya puedes iniciar sesión.');
+    }
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -64,6 +76,7 @@ export default function LoginPage() {
           <p className="mt-2 text-sm text-slate-400">
             Accede para consultar y verificar tus precios.
           </p>
+          {mensaje && <p className="mt-4 text-sm text-emerald-400" role="status">{mensaje}</p>}
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit} noValidate>
@@ -100,11 +113,10 @@ export default function LoginPage() {
                 Contraseña
               </label>
               <a
-                href="#"
-                onClick={(event) => event.preventDefault()}
+                href="/recuperar-contrasena"
                 className="text-sm text-cyan-400 transition hover:text-cyan-300"
               >
-                Olvidé mi contraseña
+                ¿Olvidaste tu contraseña?
               </a>
             </div>
             <input

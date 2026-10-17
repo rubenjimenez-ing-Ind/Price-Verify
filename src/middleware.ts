@@ -5,8 +5,14 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   if (
     pathname === '/api/auth/login' ||
+    pathname === '/api/auth/recuperar' ||
+    pathname === '/api/auth/restablecer' ||
     pathname === '/api/auth/logout' ||
-    pathname === '/api/health'
+    pathname === '/api/health' ||
+    pathname === '/recuperar-contrasena' ||
+    pathname === '/restablecer-contrasena' ||
+    pathname === '/prueba-correo' ||
+    pathname === '/api/correo/prueba'
   ) {
     return NextResponse.next();
   }
