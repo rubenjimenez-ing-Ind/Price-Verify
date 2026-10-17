@@ -11,16 +11,22 @@ function primerValor(...valores: Array<string | undefined>): string | undefined 
 export function obtenerConfiguracionSupabase(): SupabaseConfiguration | null {
   const url = primerValor(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_URL,
     process.env.PRICEVERIFY_SUPABASE_URL,
     process.env.NEXT_PUBLIC_PRICEVERIFY_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_PRICEVERIFYSUPABASE_URL,
     process.env.NEXT_PUBLIC_PRICEVERIFY_PRICEVERIFYSUPABASE_URL,
   );
   const anonKey = primerValor(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.SUPABASE_ANON_KEY,
     process.env.PRICEVERIFY_SUPABASE_ANON_KEY,
     process.env.PRICEVERIFY_SUPABASE_PUBLISHABLE_KEY,
+    process.env.SUPABASE_PUBLISHABLE_KEY,
     process.env.NEXT_PUBLIC_PRICEVERIFY_SUPABASE_ANON_KEY,
     process.env.NEXT_PUBLIC_PRICEVERIFY_SUPABASE_PUBLISHABLE_KEY,
+    process.env.NEXT_PUBLIC_PRICEVERIFYSUPABASE_ANON_KEY,
+    process.env.NEXT_PUBLIC_PRICEVERIFYSUPABASE_PUBLISHABLE_KEY,
     process.env.NEXT_PUBLIC_PRICEVERIFY_PRICEVERIFYSUPABASE_ANON_KEY,
     process.env.NEXT_PUBLIC_PRICEVERIFY_PRICEVERIFYSUPABASE_PUBLISHABLE_KEY,
   );
