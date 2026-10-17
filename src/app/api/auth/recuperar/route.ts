@@ -49,6 +49,18 @@ export async function POST(request: NextRequest) {
       },
     );
 
+    if (response.status === 429) {
+      const retryAfter = response.headers.get('Retry-After');
+      const headers = retryAfter ? { 'Retry-After': retryAfter } : undefined;
+      return NextResponse.json(
+        {
+          error:
+            'Supabase limitó temporalmente los correos de recuperación. Espera antes de volver a solicitarlo.',
+        },
+        { status: 429, headers },
+      );
+    }
+
     if (!response.ok) {
       console.error(`Supabase password recovery returned HTTP ${response.status}.`);
       return NextResponse.json(
