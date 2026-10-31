@@ -4,6 +4,17 @@
 
 :root {
   color-scheme: dark;
+  --color-primario: #1B7A5A;
+  --color-primario-suave: #E4F2EC;
+  --color-alerta: #B7791F;
+  --color-peligro: #B83232;
+  --color-total: #1B7A5A;
+  --color-inactivo: #5B6770;
+  --color-fondo: #F5F7F6;
+  --color-superficie: #FFFFFF;
+  --color-texto: #1F2933;
+  --color-texto-suave: #52606D;
+  --color-borde: #D9DEE4;
 }
 
 html, body {

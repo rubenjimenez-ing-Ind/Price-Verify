@@ -3,6 +3,16 @@ import { SESSION_COOKIE_NAME, verifySessionToken } from '@/lib/auth-session';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const isPublicPriceVerifyRoute =
+    pathname === '/' ||
+    pathname === '/comprar' ||
+    pathname.startsWith('/comprar/') ||
+    pathname === '/api/publico' ||
+    pathname.startsWith('/api/publico/');
+  if (isPublicPriceVerifyRoute) {
+    return NextResponse.next();
+  }
+
   if (
     pathname === '/api/auth/login' ||
     pathname === '/api/auth/recuperar' ||
@@ -30,7 +40,17 @@ export async function middleware(request: NextRequest) {
 
   if (!isLoginPage && !isAuthenticated) {
     if (isApiRoute) {
-      return NextResponse.json({ error: 'No autenticado.' }, { status: 401 });
+      return NextResponse.json(
+        {
+          ok: false,
+          error: {
+            codigo: 'NO_AUTORIZADO',
+            mensaje: 'Debe iniciar sesión como administrador.',
+            detalles: null,
+          },
+        },
+        { status: 401, headers: { 'Cache-Control': 'no-store' } },
+      );
     }
 
     return NextResponse.redirect(new URL('/login', request.url));

@@ -3,20 +3,33 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/tokenVercel.mjs && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:ver": "vitest",
+    "db:migrar": "node scripts/migrar.mjs",
+    "db:verificar": "node scripts/verificar-bd.mjs",
+    "db:limpiar": "node scripts/limpiar-prueba.mjs",
+    "probar:flujo": "node --env-file=.env.local --import tsx scripts/probar-flujo.ts",
+    "db:demo": "node --env-file=.env.local --import tsx scripts/cargar-demo.ts"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.2",
+    "@vercel/connect": "^2.5.2",
+    "@zxing/browser": "^0.2.1",
     "next": "^14.2.15",
+    "pg": "^8.23.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "resend": "^6.34.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^20.14.12",
+    "@types/pg": "^8.23.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
@@ -24,7 +37,9 @@
     "eslint-config-next": "^14.2.15",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.10",
+    "tsx": "^4.23.15",
     "typescript": "^5.5.4",
+    "vercel": "^64.5.0",
     "vitest": "^2.1.9"
   }
 }

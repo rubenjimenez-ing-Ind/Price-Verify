@@ -31,6 +31,8 @@ en tiempo real ni integraciones que todavía no existen.
   los metadatos de Supabase Auth; el correo se muestra como solo lectura.
 - **Disponible para administradores:** menú para consultar y crear cuentas en
   Supabase Auth, protegido por `app_metadata.role=admin`.
+- **Disponible en local:** el menú de administración regenera
+  `usuarios-registrados.md` desde Supabase; el archivo no contiene contraseñas.
 - **Pendiente:** lista de compra, cálculo del total y señalización de faltantes.
 
 ### Fuera del MVP

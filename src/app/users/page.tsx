@@ -17,6 +17,7 @@ export default function UsersPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [markdownWarning, setMarkdownWarning] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,7 +27,11 @@ export default function UsersPage() {
     setError('');
     try {
       const response = await fetch('/api/admin/users');
-      const result = (await response.json()) as { users?: ManagedUser[]; error?: string };
+      const result = (await response.json()) as {
+        users?: ManagedUser[];
+        markdownUpdated?: boolean;
+        error?: string;
+      };
       if (response.status === 403) {
         setIsAdmin(false);
         return;
@@ -36,6 +41,11 @@ export default function UsersPage() {
       }
       setIsAdmin(true);
       setUsers(result.users);
+      setMarkdownWarning(
+        result.markdownUpdated
+          ? ''
+          : 'La lista cargó, pero usuarios-registrados.md no se pudo actualizar desde este entorno.',
+      );
     } catch (loadError: unknown) {
       setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar la lista de usuarios.');
     } finally {
@@ -59,13 +69,24 @@ export default function UsersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const result = (await response.json()) as { user?: ManagedUser; error?: string };
+      const result = (await response.json()) as {
+        user?: ManagedUser;
+        markdownUpdated?: boolean;
+        error?: string;
+      };
       if (!response.ok || !result.user) {
         throw new Error(result.error ?? 'No se pudo crear el usuario.');
       }
       setEmail('');
       setPassword('');
       setSuccess(`La cuenta de ${result.user.email} se creó correctamente.`);
+      if (!result.markdownUpdated) {
+        setMarkdownWarning(
+          'El usuario se creó en Supabase, pero usuarios-registrados.md no se pudo actualizar desde este entorno.',
+        );
+      } else {
+        setMarkdownWarning('');
+      }
       await loadUsers();
     } catch (createError: unknown) {
       setError(createError instanceof Error ? createError.message : 'No se pudo crear el usuario.');
@@ -142,6 +163,11 @@ export default function UsersPage() {
                   </div>
                   {error && <p className="text-sm text-rose-400 sm:col-span-2" role="alert">{error}</p>}
                   {success && <p className="text-sm text-emerald-400 sm:col-span-2" role="status">{success}</p>}
+                  {markdownWarning && (
+                    <p className="text-sm text-amber-300 sm:col-span-2" role="status">
+                      {markdownWarning}
+                    </p>
+                  )}
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
@@ -156,6 +182,11 @@ export default function UsersPage() {
 
               <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
                 <h2 className="text-xl font-semibold">Cuentas registradas</h2>
+                {markdownWarning && (
+                  <p className="mt-3 text-sm text-amber-300" role="status">
+                    {markdownWarning}
+                  </p>
+                )}
                 {users.length === 0 ? (
                   <p className="mt-5 text-sm text-slate-400">Aún no hay cuentas para mostrar.</p>
                 ) : (
