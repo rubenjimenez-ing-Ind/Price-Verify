@@ -9,7 +9,9 @@ type GlobalConPool = typeof globalThis & { poolPriceVerify?: Pool };
 const globalParaPool = globalThis as GlobalConPool;
 
 function obtenerUrlConexion(): string {
-  const configurada = process.env.POSTGRES_URL_NON_POOLING;
+  const configurada =
+    process.env.POSTGRES_URL_NON_POOLING ??
+    process.env.PRICEVERIFY_POSTGRES_URL_NON_POOLING;
   if (!configurada) {
     throw new Error('Falta configurar la variable POSTGRES_URL_NON_POOLING.');
   }
