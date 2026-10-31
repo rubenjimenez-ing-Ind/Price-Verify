@@ -80,9 +80,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No se pudo iniciar sesión.' }, { status: 502 });
     }
 
+    const appMetadata =
+      'app_metadata' in authResult.user &&
+      typeof authResult.user.app_metadata === 'object' &&
+      authResult.user.app_metadata !== null
+        ? authResult.user.app_metadata
+        : null;
+    const isAdmin =
+      appMetadata !== null &&
+      'role' in appMetadata &&
+      appMetadata.role === 'admin';
     const maxAge = Math.min(SESSION_DURATION, Math.floor(authResult.expires_in));
     const token = await createSessionToken(authResult.user.id, authResult.access_token, secret, maxAge);
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true, isAdmin });
     response.cookies.set(SESSION_COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

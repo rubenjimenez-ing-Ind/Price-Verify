@@ -1,9 +1,9 @@
 # PriceVerify
 
-PriceVerify incluye un verificador de precios y carrito de compra anónimo. El
-cliente busca productos, compara el precio de etiqueta con el precio vigente y
-calcula un total estimado. El precio unitario se congela al agregar cada
-producto; no se procesan pagos ni se integra con caja.
+PriceVerify incluye un verificador de precios y carrito de compra autenticado.
+El cliente inicia sesión, busca productos, compara el precio de etiqueta con el
+precio vigente y calcula un total estimado. El precio unitario se congela al
+agregar cada producto; no se procesan pagos ni se integra con caja.
 
 El catálogo PriceVerify se almacena en Supabase Postgres. La página anterior
 `/products` continúa usando el catálogo JSON existente.
@@ -15,9 +15,11 @@ Alcance y decisiones:
 
 ## Funcionalidades
 
-- Consulta pública por código o nombre, incluyendo búsqueda sin acentos.
+- Consulta por código o nombre, incluyendo búsqueda sin acentos, tras iniciar
+  sesión.
 - Alerta textual cuando el precio de etiqueta difiere del vigente.
-- Carrito anónimo por dispositivo, con cantidades, eliminación y total en COP.
+- Carrito por dispositivo para usuarios autenticados, con cantidades,
+  eliminación y total en COP.
 - Catálogo administrativo para crear, editar y desactivar productos.
 - Cierre de carrito por inactividad, fotos y escaneo con cámara.
 
@@ -31,8 +33,9 @@ debe validarse en el dispositivo; no se pudo comprobar en el equipo local.
 
 ## Acceso
 
-- Cliente: abre `/comprar`; no necesita cuenta. El carrito se identifica con un
-  UUID guardado en `localStorage`.
+- Cliente: inicia sesión en `/login`; después puede consultar productos y
+  comprar en `/comprar`. El carrito se identifica con un UUID guardado en
+  `localStorage` y requiere la misma sesión autenticada.
 - Administrador: inicia sesión en `/login` y gestiona productos en `/admin`.
   La cuenta necesita `app_metadata.role=admin`.
 

@@ -15,6 +15,20 @@
 
 ## Bitácora
 
+### Ajuste de acceso tras P09 · 2026-10-31
+
+- Por solicitud de la usuaria, el login ahora es obligatorio para la app, la
+  compra y sus endpoints API.
+- Los administradores (`app_metadata.role=admin`) entran a `/admin`; los
+  clientes autenticados entran a `/comprar`. El carrito conserva su
+  `device_id`.
+- Verificación runtime sin sesión: `/comprar` redirige a `/login` (307) y
+  `/api/publico/carrito` responde 401. `/login` responde 200.
+- `npm run build` correcto y `npm test` con 23 pruebas aprobadas.
+- A-05 se actualizó para cliente autenticado y se añadió A-20. Una sesión
+  válida existente se conserva hasta cerrar sesión o expirar; por eso un
+  navegador ya autenticado no vuelve a pedir credenciales.
+
 ### P00 · Auditoría
 
 - **Archivos creados:** `Doc/ESTADO_ACTUAL.md`, `.github/copilot-instructions.md`,

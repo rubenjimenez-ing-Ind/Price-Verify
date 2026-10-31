@@ -72,14 +72,19 @@ Este plan es el documento rector del proyecto. Copilot lo lee antes de cada tare
 
 ### 1.3 Regla sobre el login y los dos tipos de uso
 
-El plan funcional dice que el carrito del cliente es **anónimo y temporal**, sin cuenta (sección 7). Pero el catálogo de productos (crear, editar, fijar el precio de etiqueta) sí necesita un administrador. Se resuelve así:
+**Decisión actualizada el 2026-10-31 por solicitud de la usuaria:** todo acceso
+a la aplicación requiere iniciar sesión. Esto reemplaza la decisión inicial del
+plan funcional de permitir compras anónimas.
 
-- **Carrito del cliente:** no requiere login. La sesión del carrito se identifica con un `device_id` (UUID en localStorage), como un carrito anónimo que vive en el dispositivo. Esto cumple "cada sesión es anónima y temporal".
-- **Gestión de productos:** requiere el login existente. Solo un administrador autenticado crea o edita productos y fija precios.
-
-El login no se reescribe; solo se agrega el adaptador `lib/auth/sesion.ts` (`obtenerUsuario`, `exigirUsuario`), la protección de `/admin/*` y `/api/admin/*`, y la redirección posterior al login hacia `/admin`. Las rutas del cliente (`/comprar`, `/api/publico/*`) son públicas.
-
-Si P00 encuentra que el login no distingue roles, cualquier usuario autenticado es administrador (un solo rol), lo cual basta para este alcance.
+- **Cliente:** inicia sesión y luego consulta productos y usa el carrito. El
+  carrito conserva su `device_id` (UUID en localStorage) y la sesión autenticada
+  habilita las páginas y API de compra.
+- **Administrador:** inicia sesión con una cuenta cuyo
+  `app_metadata.role=admin` para gestionar productos.
+- `/`, `/comprar/*`, `/api/publico/*` y las rutas de administración exigen una
+  sesión válida. Sin sesión, las páginas redirigen a `/login` y las API
+  responden 401. El login envía a administradores a `/admin` y a clientes a
+  `/comprar`.
 
 ---
 
@@ -868,8 +873,8 @@ Se construyen solo con la fase 6 cerrada.
 | Precio de etiqueta | El precio impreso en el estante; puede estar desactualizado o no registrado |
 | Discrepancia | Diferencia entre el precio actual y el de etiqueta; dispara una alerta informativa |
 | Precio congelado | El `precio_unitario` que se copia al agregar un producto al carrito; no cambia después |
-| Sesión (carrito) | Carrito anónimo y temporal identificado por el `device_id` del dispositivo |
-| device_id | UUID guardado en localStorage que identifica el carrito del dispositivo, sin cuenta |
+| Sesión (carrito) | Carrito temporal identificado por el `device_id` del dispositivo; el acceso requiere iniciar sesión |
+| device_id | UUID guardado en localStorage que identifica el carrito del dispositivo |
 | Subtotal | cantidad × precio_unitario de un ítem |
 | Total | suma de los subtotales de los ítems activos de la sesión |
 | Regla pura | Función de `lib/reglas/` que solo depende de sus parámetros |

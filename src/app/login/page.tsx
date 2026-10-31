@@ -45,7 +45,7 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: normalizedEmail, password }),
       });
-      const result = (await response.json()) as { error?: string };
+      const result = (await response.json()) as { error?: string; isAdmin?: boolean };
 
       if (!response.ok) {
         setPasswordError(result.error ?? 'Correo o contraseña incorrectos');
@@ -53,7 +53,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push('/admin');
+      router.push(result.isAdmin ? '/admin' : '/comprar');
       router.refresh();
       return;
     } catch {

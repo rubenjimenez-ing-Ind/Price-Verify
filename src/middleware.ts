@@ -3,16 +3,6 @@ import { SESSION_COOKIE_NAME, verifySessionToken } from '@/lib/auth-session';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const isPublicPriceVerifyRoute =
-    pathname === '/' ||
-    pathname === '/comprar' ||
-    pathname.startsWith('/comprar/') ||
-    pathname === '/api/publico' ||
-    pathname.startsWith('/api/publico/');
-  if (isPublicPriceVerifyRoute) {
-    return NextResponse.next();
-  }
-
   if (
     pathname === '/api/auth/login' ||
     pathname === '/api/auth/recuperar' ||
