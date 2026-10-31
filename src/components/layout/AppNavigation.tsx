@@ -90,7 +90,7 @@ export function AppNavigation() {
           disabled={isSigningOut}
           className="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 transition hover:border-rose-400 hover:text-rose-300 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSigningOut ? 'Saliendo...' : 'Cerrar sesión'}
+          {isSigningOut ? 'Saliendo...' : 'Cerrar sesión de la cuenta'}
         </button>
       </div>
     </nav>

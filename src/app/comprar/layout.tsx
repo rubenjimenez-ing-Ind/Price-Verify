@@ -14,9 +14,6 @@ export default function ComprarLayout({ children }: { children: ReactNode }) {
             <Link href="/comprar#carrito" className="rounded-lg px-2 py-2 hover:bg-white/10 focus-visible:outline focus-visible:outline-2">
               Carrito
             </Link>
-            <Link href="/login" className="rounded-lg px-2 py-2 text-white/90 hover:bg-white/10 focus-visible:outline focus-visible:outline-2">
-              Administración
-            </Link>
             <AccionesNavegacionCompra />
           </nav>
         </div>
